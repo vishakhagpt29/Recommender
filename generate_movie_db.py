@@ -1772,7 +1772,7 @@ temp = {}
 for name in names:
     i = random.randrange(3,10)
     while(i>0):
-        temp[movies[random.randrange(0,1659)]] = random.uniform(0.1,5.0)
+        temp[movies[random.randrange(0,1659)]] = round(random.uniform(0.1,5.0),1)
         i = i - 1
     critics[name] = temp    
     temp = {}
