@@ -1,5 +1,4 @@
-#movies: list, list of movies
-﻿movies = ['Toy Story', 
+movies = ['Toy Story',
 'Jumanji', 
 'Grumpier Old Men', 
 'Waiting to Exhale', 
