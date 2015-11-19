@@ -1,4 +1,4 @@
-from data import category
+from category import category
 
 #clubs movies on the basis of their genre, genreates genre_movie dictionary
 def club_genre():
@@ -10,8 +10,7 @@ def club_genre():
                 temp_data[item].append(k)
             else:
                 temp_data[item] = [k]
-    print temp_data
-    
+    print temp_data.keys()
 
 if __name__ == "__main__":
     club_genre()
