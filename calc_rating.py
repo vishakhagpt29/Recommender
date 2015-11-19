@@ -21,7 +21,7 @@ def calc_rating():
 	print avg_rat
 
 	for film in avg_rat:
-	    avg_rat[film] = float(float(avg_rat[film])/float(movie_user[film]))
+	    avg_rat[film] = round(float(avg_rat[film])/float(movie_user[film]),1)
 	print avg_rat
 
 if __name__ == "__main__":
