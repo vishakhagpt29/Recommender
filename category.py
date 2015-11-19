@@ -1,5 +1,4 @@
-#category: dictionary, movie name as key and a list containing one or more category
-﻿category = {'Toy Story':['Animation','Children\'s','Comedy'], 
+category = {'Toy Story':['Animation','Children\'s','Comedy'], 
 'Jumanji':['Adventure','Children\'s','Fantasy'], 
 'Grumpier Old Men':['Comedy','Romance'], 
 'Waiting to Exhale':['Comedy','Drama'], 
