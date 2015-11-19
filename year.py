@@ -1,5 +1,4 @@
-#year: dictionary, movie name as key and year as value
-﻿year = {'Toy Story':'1995', 
+year = {'Toy Story':'1995', 
 'Jumanji':'1995', 
 'Grumpier Old Men':'1995', 
 'Waiting to Exhale':'1995', 
