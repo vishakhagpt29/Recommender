@@ -4,11 +4,11 @@ from year import year
 def club_year():
     temp_data = {}
     for k in year:
-        if(k in temp_data):
+        if(year[k] in temp_data):
             temp_data[year[k]].append(k)
         else:
             temp_data[year[k]] = [k]
     print temp_data
 
 if __name__ == "__main__":
-    club_genre()
+    club_year()
