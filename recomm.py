@@ -17,8 +17,10 @@ class domain_select(object):
             print("\nEnter choice\n1. Eucledian\n2. Pearson\n3. Exit")
             inp = raw_input()
             if(inp == "1"):
-                print "enter person1 and person2\n"
+                print "Enter person1 and person2\n"
+                print "1st person:\n"
                 p1 = raw_input()
+                print "2st person:\n"
                 p2 = raw_input()
                 distance = sim_obj.sim_distance(critics,p1.lower(),p2.lower())
             if(inp == "2"):
@@ -47,12 +49,20 @@ class domain_select(object):
             if(inp == "3"):
                 return
 
+    #calculate nearest neighbours for given person
     def group_inp(self):
         print("\nEnter name of the user\n")
         user = raw_input()
         group_obj = grouping()
         #group_obj.topMatches(critics,user,n=10,similar=sim_pearson)
         group_obj.topMatches(critics,user,n=10)
+
+    #calculate recommendation on the basis of ratings
+    def recomm(self):
+        print("\nEnter name of the user\n")
+        user = raw_input()
+        control_obj = controller()
+        control_obj.getRecommendations(critics,user)
 
 class grouping(object):
     
@@ -128,8 +138,40 @@ class controller(object):
         return
     
     #Recommend
-    def recommend(self):
-        return
+    # Gets recommendations for a person by using a weighted average of every other user's rankings
+    def getRecommendations(self,critics,person):
+        totals={}
+        simSums={}
+        sim_obj = similarity()
+        for other in critics:
+            # don't compare me to myself
+            if other==person:
+                continue
+            sim=sim_obj.sim_pearson(critics,person,other)
+            #print sim
+            # ignore scores of zero or lower
+            if sim<=0:
+                continue
+            for item in critics[other]:
+                # only score movies I haven't seen yet
+                if item not in critics[person] or critics[person][item]==0:
+                    # Similarity * Score
+                    totals.setdefault(item,0)
+                    totals[item]+=critics[other][item]*sim
+                    # Sum of similarities
+                    simSums.setdefault(item,0)
+                    simSums[item]+=sim
+        # Create the normalized list
+        rankings=[(total/simSums[item],item) for item,total in totals.items( )]
+        # Return the sorted list
+        rankings.sort( )
+        rankings.reverse( )
+        print rankings
+        suggestions =  [x[1] for x in rankings][:10]
+        print "\n### POPULAR RESULTS ###\n"
+        for index,suggestions in enumerate(suggestions):
+            print index+1,". ",suggestions
+            
 
     #Recommendation based on genre
     def cat_recomm(self,genre_movie,avg_rat,_genre):
@@ -186,7 +228,7 @@ if __name__ == "__main__":
     
     #User is prompted to ebter a choice for user-wise suggestion or feature-wise suggestion
     while(True):
-        print("\nEnter choice\n1. Similarity between users\n2. List similar users \n3. Feature-wise Suggestion\n4. Exit\n")
+        print("\nEnter choice\n1. Similarity Between Users\n2. List Similar Users \n3. General Suggestion\n4. Feature-wise Suggestion\n5. Exit\n")
         inp = raw_input()
         if(inp == "1"):
             dom_obj = domain_select()
@@ -196,6 +238,9 @@ if __name__ == "__main__":
             dom_obj.group_inp()
         if(inp == "3"):
             dom_obj = domain_select()
-            dom_obj.feature_menu()
+            dom_obj.recomm()
         if(inp == "4"):
+            dom_obj = domain_select()
+            dom_obj.feature_menu()
+        if(inp == "5"):
             break
