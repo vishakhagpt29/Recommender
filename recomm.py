@@ -160,9 +160,9 @@ class controller(object):
         for item in year_movie:
             if(item == _year):
                 candidate_movies = year_movie[item]
-            else:
-                print "Year Not Fount in Database."
-                return
+##            else:
+##                print "Year Not Fount in Database."
+##                return
         for movie in candidate_movies:
             if(movie in avg_rat) and (avg_rat[movie] >= 2.5):
                 rec[movie] = avg_rat[movie]
