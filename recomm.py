@@ -1,5 +1,5 @@
 from math import sqrt
-import MySQLdb as mdb
+#import MySQLdb as mdb
 from movies import movies
 from critics import critics
 from genre_movie import genre_movie
@@ -10,6 +10,10 @@ from genre import genre
 
 class domain_select(object):
 
+    #constructor
+    def __init__(self):
+        return
+
     #there are 2 kinds of similartiy measeres (user can choose)
     def sim_menu(self):
         sim_obj = similarity()
@@ -18,20 +22,23 @@ class domain_select(object):
             inp = raw_input()
             if(inp == "1"):
                 print "Enter person1 and person2\n"
-                print "1st person:\n"
+                print "\n1st person:\n"
                 p1 = raw_input()
-                print "2st person:\n"
+                print "\n2st person:\n"
                 p2 = raw_input()
                 distance = sim_obj.sim_distance(critics,p1.lower(),p2.lower())
             if(inp == "2"):
+                print "Enter person1 and person2\n"
+                print "\n1st person:\n"
                 p1 = raw_input()
+                print "\n2st person:\n"
                 p2 = raw_input()
                 distance = sim_obj.sim_pearson(critics,p1,p2)
             if(inp == "3"):
                 return
             print "Similarity distance is ",distance
 
-    #there are 2 types of features implemented
+    #two types of features implemented - Genre, Year
     def feature_menu(self):
             print("\nEnter choice\n1. Genre\n2. Year\n3. Back\n")
             inp = raw_input()
@@ -49,7 +56,7 @@ class domain_select(object):
             if(inp == "3"):
                 return
 
-    #calculate nearest neighbours for given person
+    #call nearest neighbours module for given person
     def group_inp(self):
         print("\nEnter name of the user\n")
         user = raw_input()
@@ -67,8 +74,7 @@ class domain_select(object):
 class grouping(object):
     
     #Ranking function
-    # Returns the best matches for person from the prefs dictionary.
-    # Number of results and similarity function are optional params.
+    #Returns the best matches for person from the critics dictionary.
     def topMatches(self,critics,person,n):
         sim_obj = similarity()
         scores=[(sim_obj.sim_pearson(critics,person,other),other)
@@ -96,7 +102,7 @@ class similarity(object):
                                 if item in db[p2.lower()]])
         return 1/(1+sum_of_squares)
 
-    #distance calculation based on Pearson Correlation
+    
 ##    def sim_pearson(self,db,p1,p2):
 ##        si={}
 ##        for item in db[p1]:
@@ -114,6 +120,8 @@ class similarity(object):
 ##        if den==0: return 0
 ##        r=num/den
 ##        return r
+    
+    #distance calculation based on Pearson Correlation
     def sim_pearson(self,db,p1,p2):
         si={}
         for item in db[p1]:
@@ -133,40 +141,29 @@ class similarity(object):
 
 class controller(object):
     
-    #Retrieve fn
-    def retrieve(self):
-        return
-    
     #Recommend
-    # Gets recommendations for a person by using a weighted average of every other user's rankings
+    #gets recommendations for a person by using a weighted average of every other user's rankings
     def getRecommendations(self,critics,person):
         totals={}
         simSums={}
         sim_obj = similarity()
         for other in critics:
-            # don't compare me to myself
             if other==person:
                 continue
             sim=sim_obj.sim_pearson(critics,person,other)
-            #print sim
-            # ignore scores of zero or lower
             if sim<=0:
                 continue
             for item in critics[other]:
-                # only score movies I haven't seen yet
                 if item not in critics[person] or critics[person][item]==0:
-                    # Similarity * Score
                     totals.setdefault(item,0)
                     totals[item]+=critics[other][item]*sim
-                    # Sum of similarities
                     simSums.setdefault(item,0)
                     simSums[item]+=sim
-        # Create the normalized list
+        #normalized ranking list
         rankings=[(total/simSums[item],item) for item,total in totals.items( )]
-        # Return the sorted list
+        #sorted list
         rankings.sort( )
         rankings.reverse( )
-        print rankings
         suggestions =  [x[1] for x in rankings][:10]
         print "\n### POPULAR RESULTS ###\n"
         for index,suggestions in enumerate(suggestions):
@@ -182,10 +179,6 @@ class controller(object):
             if(item == _genre):
                 
                 candidate_movies = genre_movie[item]
-            
-##            else:
-##                print "Genre Not Fount in Database."
-##                return
         for movie in candidate_movies:
             if(movie in avg_rat) and (avg_rat[movie] >= 2.5):
                 rec[movie] = avg_rat[movie]
@@ -202,9 +195,6 @@ class controller(object):
         for item in year_movie:
             if(item == _year):
                 candidate_movies = year_movie[item]
-##            else:
-##                print "Year Not Fount in Database."
-##                return
         for movie in candidate_movies:
             if(movie in avg_rat) and (avg_rat[movie] >= 2.5):
                 rec[movie] = avg_rat[movie]
@@ -214,33 +204,37 @@ class controller(object):
                 print index,".", item
                 index += 1
         
+class ui(object):
 
+	def menu(self):
+		#User is prompted to enter a choice for user-wise suggestion or feature-wise suggestion
+	    while(True):
+		print("\nEnter choice\n1. Similarity Between Users\n2. List Similar Users \n3. General Suggestion\n4. Feature-wise Suggestion\n5. Exit\n")
+		inp = raw_input()
+		if(inp == "1"):
+		    dom_obj = domain_select()
+		    dom_obj.sim_menu()
+		if(inp == "2"):
+		    dom_obj = domain_select()
+		    dom_obj.group_inp()
+		if(inp == "3"):
+		    dom_obj = domain_select()
+		    dom_obj.recomm()
+		if(inp == "4"):
+		    dom_obj = domain_select()
+		    dom_obj.feature_menu()
+		if(inp == "5"):
+		    break
 
-class connect(object):
-    
-    #MYSQL database connectivity
-    def db_connect(self):
-        con = mdb.connect('localhost', 'vishakha', 'vishakha', 'data');
-        return con
+##class connect(object):
+##    
+##    #MYSQL database connectivity
+##    def db_connect(self):
+##        con = mdb.connect('localhost', 'vishakha', 'vishakha', 'data');
+##        return con
 
 
 if __name__ == "__main__":
     
-    #User is prompted to ebter a choice for user-wise suggestion or feature-wise suggestion
-    while(True):
-        print("\nEnter choice\n1. Similarity Between Users\n2. List Similar Users \n3. General Suggestion\n4. Feature-wise Suggestion\n5. Exit\n")
-        inp = raw_input()
-        if(inp == "1"):
-            dom_obj = domain_select()
-            dom_obj.sim_menu()
-        if(inp == "2"):
-            dom_obj = domain_select()
-            dom_obj.group_inp()
-        if(inp == "3"):
-            dom_obj = domain_select()
-            dom_obj.recomm()
-        if(inp == "4"):
-            dom_obj = domain_select()
-            dom_obj.feature_menu()
-        if(inp == "5"):
-            break
+    if_obj = ui()
+    if_obj.menu()
